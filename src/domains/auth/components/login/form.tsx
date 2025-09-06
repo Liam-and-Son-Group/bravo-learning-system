@@ -15,7 +15,7 @@ import { useLoginForm } from "./useLoginForm";
 export default function LoginForm() {
   const [
     { register, formState, isSubmitingForm, showPassword },
-    { handleSubmit, onSubmit, setShowPassword },
+    { handleSubmit, onSubmit, setShowPassword, redirectToSignup },
   ] = useLoginForm();
 
   return (
@@ -122,7 +122,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 className="text-blue-600 hover:text-blue-500 font-medium"
-                onClick={() => alert("Sign up functionality would go here")}
+                onClick={redirectToSignup}
               >
                 Sign up
               </button>

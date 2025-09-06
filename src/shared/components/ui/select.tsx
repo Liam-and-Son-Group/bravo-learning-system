@@ -5,6 +5,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 
 import { cn } from "@/shared/lib/utils/mergeClass";
+import { Label } from "./label";
 
 const Select = SelectPrimitive.Root;
 
@@ -145,6 +146,83 @@ const SelectSeparator = React.forwardRef<
 ));
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
+type Option = {
+  value: string;
+  label: string;
+};
+
+type OptionGroup = {
+  label: string;
+  options: Option[];
+};
+
+type SelectFieldProps = {
+  id: string;
+  label?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  /** Pass flat options OR grouped options */
+  options: Option[] | OptionGroup[];
+  grouped?: boolean;
+  required?: boolean;
+  error?: string;
+  className?: string;
+};
+
+function SelectField({
+  id,
+  label,
+  placeholder = "Select an option",
+  value,
+  onChange,
+  options,
+  grouped = false,
+  required,
+  error,
+  className,
+}: SelectFieldProps) {
+  return (
+    <div className="grid gap-2">
+      {label && (
+        <Label htmlFor={id}>
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </Label>
+      )}
+      <div className="flex flex-col gap-1">
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger
+            id={id}
+            className={cn(className, error && "border-red-500")}
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {grouped
+              ? (options as OptionGroup[]).map((group) => (
+                  <SelectGroup key={group.label}>
+                    <SelectLabel>{group.label}</SelectLabel>
+                    {group.options.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                ))
+              : (options as Option[]).map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+          </SelectContent>
+        </Select>
+        <span className="text-sm text-red-500">{error}</span>
+      </div>
+    </div>
+  );
+}
+
 export {
   Select,
   SelectGroup,
@@ -156,4 +234,8 @@ export {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
+  SelectField,
+  type SelectFieldProps,
+  type OptionGroup,
+  type Option,
 };
