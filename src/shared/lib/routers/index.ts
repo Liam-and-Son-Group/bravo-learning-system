@@ -1,6 +1,6 @@
 // src/router.tsx
 import App from "@/App";
-import { authRoute } from "@/domains/auth/router";
+import { authRoute, signupRoute } from "@/domains/auth/router";
 import {
   authoringRouter,
   authoringIndexRouter,
@@ -36,6 +36,7 @@ const routeTree = rootRoute.addChildren([
   nonAuthenticateRoute,
   authenticatedRoute,
   authRoute,
+  signupRoute,
   homeRoute,
   courseRoute,
   authoringRouter,
