@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.43.1",
     "@hookform/resolvers": "^5.2.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -43,6 +44,7 @@
     "color-convert": "^3.1.0",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.12",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
     "next-themes": "^0.4.6",
