@@ -183,7 +183,7 @@ function SelectField({
   className,
 }: SelectFieldProps) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-3">
       {label && (
         <Label htmlFor={id}>
           {label}

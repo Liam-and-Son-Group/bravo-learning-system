@@ -35,7 +35,7 @@ const NAVIGATION_ACTIONS: TTemplateAction[] = [
   {
     title: "Class",
     Icon: UsersRound,
-    href: "/classes",
+    href: "/classrooms",
   },
   {
     title: "Authoring",
