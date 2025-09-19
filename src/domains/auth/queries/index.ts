@@ -1,8 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { checkToken, getUser, login, signup } from "../apis";
+import { checkToken, getUser, login, signupFull } from "../apis";
 import type { AxiosError } from "axios";
 import { useAuthStore } from "../storage";
-import type { TLoginResponse } from "../types";
+import type {
+  TLoginResponse,
+  TSignupFullRequest,
+  TSignupFullResponse,
+} from "../types";
 import type { TReponse } from "@/shared/types/http.type";
 
 type TParams = {
@@ -32,13 +36,31 @@ export const useLoginMutation = (params?: TParams) => {
   });
 };
 
-export const useSignupMutation = () =>
-  useMutation({
-    mutationFn: signup,
+export const useFullSignupMutation = (params?: {
+  onSuccess?: (data: TSignupFullResponse) => void;
+  onError?: (error: AxiosError) => void;
+}) => {
+  const { renewToken } = useAuthStore();
+  return useMutation({
+    mutationKey: ["signup-full"],
+    mutationFn: (payload: TSignupFullRequest) => signupFull(payload),
+    onSuccess: (res: TReponse<TSignupFullResponse>) => {
+      // If backend returns tokens, persist them
+      const { access_token, refresh_token } = res.body;
+      if (access_token) {
+        renewToken({
+          accessToken: access_token,
+          refreshToken: refresh_token || "",
+        });
+      }
+      params?.onSuccess?.(res.body);
+    },
     onError: (error: AxiosError) => {
-      console.error("Signup failed:", error.message);
+      params?.onError?.(error);
+      console.error("Full signup failed:", error.message);
     },
   });
+};
 
 export const useGetUser = ({ enabled }: { enabled: boolean }) =>
   useQuery({

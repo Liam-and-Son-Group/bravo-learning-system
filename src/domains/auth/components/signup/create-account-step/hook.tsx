@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { COUNT_COUNTRIES, TIMEZONES } from "../const";
+import { CONST_COUNTRIES, TIMEZONES } from "../const";
 
 export const formSchema = z
   .object({
@@ -50,12 +50,11 @@ export default function useCreateAccount({
 }: {
   initValue?: TFormCreateAccountValues;
 }) {
-  console.log("🚀 ~ useCreateAccount ~ initValue:", initValue);
   const { control, register, setValue, handleSubmit, formState } =
     useForm<TFormCreateAccountValues>({
       defaultValues: initValue ?? {
         confirm: "",
-        country: COUNT_COUNTRIES[0].value,
+        country: CONST_COUNTRIES[0].value,
         email: "",
         fullname: "",
         job: "",

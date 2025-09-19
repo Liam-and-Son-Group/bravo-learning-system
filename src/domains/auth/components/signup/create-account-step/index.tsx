@@ -2,7 +2,7 @@ import { Input } from "@/shared/components/ui/input";
 import { SelectField } from "@/shared/components/ui/select";
 
 import { User, Briefcase, Mail, Lock } from "lucide-react";
-import { COUNT_COUNTRIES, TIMEZONES } from "../const";
+import { CONST_COUNTRIES, TIMEZONES } from "../const";
 import { Label } from "@/shared/components/ui/label";
 import { AvatarUploader } from "@/shared/components/ui/upload";
 import { Controller } from "react-hook-form";
@@ -135,7 +135,7 @@ const CreateAccountStep = forwardRef(function CreateAccountStep(
               <SelectField
                 label="Nation / Region"
                 id="country"
-                options={COUNT_COUNTRIES}
+                options={CONST_COUNTRIES}
                 value={field.value}
                 onChange={field.onChange}
                 error={errors.country?.message}

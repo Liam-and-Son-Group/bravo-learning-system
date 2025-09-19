@@ -6,6 +6,10 @@ import {
   authoringIndexRouter,
 } from "@/domains/authoring/router";
 import { courseRoute } from "@/domains/course/router";
+import {
+  classroomDetailRoute,
+  classroomsRoute,
+} from "@/domains/classroom/router";
 import { homeRoute } from "@/domains/home/router";
 import AppLayout from "@/shared/components/templates/AppLayout";
 import NonAuthTemplate from "@/shared/components/templates/NonAuthLayout";
@@ -41,6 +45,8 @@ const routeTree = rootRoute.addChildren([
   courseRoute,
   authoringRouter,
   authoringIndexRouter,
+  classroomsRoute,
+  classroomDetailRoute,
 ]);
 export const router = createRouter({ routeTree });
 
