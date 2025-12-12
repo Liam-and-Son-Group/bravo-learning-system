@@ -1,5 +1,5 @@
 import type { TStep } from "@/shared/components/ui/stepper";
-import { Shield, Building2, Phone, FileText, Users } from "lucide-react";
+import { Shield, Building2, Users, Plane } from "lucide-react";
 
 export const CONST_SIGNUP_STEP: TStep[] = [
   {
@@ -16,19 +16,19 @@ export const CONST_SIGNUP_STEP: TStep[] = [
   },
   {
     id: "3",
-    title: "Legal & Region",
-    description: "Region, size, and documents.",
-    icon: FileText,
-  },
-  {
-    id: "4",
     title: "Invite Team (Optional)",
     description: "Add teammates or skip.",
     icon: Users,
   },
+  {
+    id: "4",
+    title: "Takeoff",
+    description: "All set for the journey.",
+    icon: Plane,
+  },
 ];
 
-export const COUNT_COUNTRIES: { value: string; label: string }[] = [
+export const CONST_COUNTRIES: { value: string; label: string }[] = [
   { value: "VN", label: "Vietnam" },
   { value: "US", label: "United States" },
   { value: "CN", label: "China" },
@@ -68,4 +68,11 @@ export const TIMEZONES: { value: string; label: string }[] = [
   { value: "Asia/Tokyo", label: "Japan Standard Time (GMT+9)" },
   { value: "Australia/Sydney", label: "Sydney (GMT+10)" },
   { value: "Pacific/Auckland", label: "New Zealand (GMT+12)" },
+];
+
+export const ORGANIZATION_TYPES: { value: string; label: string }[] = [
+  { label: "School", value: "School" },
+  { label: "Private Center", value: "Private Center" },
+  { label: "University", value: "University" },
+  { label: "Company", value: "Company" },
 ];

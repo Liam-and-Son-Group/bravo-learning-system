@@ -20,22 +20,82 @@ export type TLoginResponse = {
   refresh_token?: string;
 };
 
+// Raw login API response (new backend contract)
+export type TRawLoginApiResponse = {
+  success: boolean;
+  message?: string;
+  data?: {
+    accessToken?: string;
+    refreshToken?: string;
+  };
+};
+
 export type TUserProfileResponse = {
   id: string;
   fullname: string;
   email: string;
-  job_title: string;
   country: string;
-  role_id: string;
+  authId: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   role: {
-    ID: string;
+    id: string;
     Name: string;
   };
-  auth_id: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
+  organizationId: string | null;
 };
 
-export type TCheckToken = {
-  verify: string;
+// ---------------------------------------------
+// Signup (multi-step wizard) composite payload
+// ---------------------------------------------
+export type TSignupCreateAccount = {
+  avatarUrl?: string; // URL after upload (optional)
+  fullname: string;
+  job: string;
+  email: string;
+  password: string;
+  confirm: string; // kept for parity; backend may ignore
+  country: string;
+  phone?: string;
+  timezone: string;
+};
+
+export type TSignupOrganization = {
+  organizationName: string;
+  organizationType: string;
+  address?: string;
+  city: string;
+  country: string;
+  contactEmail: string;
+  contactPhone?: string;
+  website?: string;
+  taxCode?: string;
+};
+
+export type TSignupInviteMember = {
+  inviteMethod: "email" | "username" | "link";
+  emails: string[];
+  usernames: string[];
+  role: string; // role id or code
+  message?: string;
+};
+
+export type TSignupFullRequest = {
+  createAccount: TSignupCreateAccount;
+  organization: TSignupOrganization;
+  inviteMember: TSignupInviteMember;
+};
+
+export type TSignupFullResponse = {
+  userId: string;
+  organizationId: string;
+  invitesProcessed: number;
+  access_token?: string; // optionally returned directly
+  refresh_token?: string;
+};
+
+// Uploads
+export type TUploadAvatarResponse = {
+  url: string; // public URL of stored avatar
+  key?: string; // storage key (optional)
 };

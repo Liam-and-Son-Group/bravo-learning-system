@@ -1,0 +1,559 @@
+openapi: 3.0.3
+info:
+  title: Working Desk & Versioning API
+  version: 1.0.0
+  description: |
+    API specification for working desk (collaborative authoring workspace) and versioning operations.
+    Response envelope follows uniform shape for success & error responses.
+servers:
+  - url: https://api.example.com/service/v1
+    description: Production
+  - url: https://staging-api.example.com/service/v1
+    description: Staging
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    EnvelopeSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: OK
+        data:
+          description: Payload wrapper (generic)
+      required: [success, data]
+    EnvelopeError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Validation failed
+        errorCode:
+          type: string
+          example: VALIDATION_ERROR
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: name
+              message:
+                type: string
+                example: Name is required
+      required: [success, message]
+    PaginationMeta:
+      type: object
+      properties:
+        page: { type: integer, example: 1 }
+        limit: { type: integer, example: 20 }
+        totalItems: { type: integer, example: 124 }
+        totalPages: { type: integer, example: 7 }
+        hasNext: { type: boolean, example: true }
+        hasPrev: { type: boolean, example: false }
+      required: [page, limit, totalItems, totalPages]
+    Version:
+      type: object
+      properties:
+        id: { type: string, example: ver_8f3c2d1 }
+        deskId: { type: string, example: desk_a12bc3 }
+        number: { type: integer, example: 5 }
+        name: { type: string, example: "Initial draft" }
+        status: { type: string, enum: [draft, published, archived], example: draft }
+        createdBy: { type: string, example: user_f87ab2 }
+        createdAt: { type: string, format: date-time, example: 2025-09-01T10:45:12Z }
+        updatedAt: { type: string, format: date-time, example: 2025-09-01T11:00:00Z }
+        publishedAt: { type: string, format: date-time, nullable: true, example: null }
+        changeSummary: { type: string, example: "Added lesson objectives and assessment outline." }
+      required: [id, deskId, number, status, createdBy, createdAt]
+    VersionCreateRequest:
+      type: object
+      properties:
+        name: { type: string, example: "Initial draft" }
+        changeSummary: { type: string, example: "Seed content" }
+      required: [name]
+    VersionUpdateRequest:
+      type: object
+      properties:
+        name: { type: string, example: "Initial draft (renamed)" }
+        changeSummary: { type: string, example: "Clarified scope" }
+      additionalProperties: false
+    Desk:
+      type: object
+      properties:
+        id: { type: string, example: desk_a12bc3 }
+        name: { type: string, example: "Physics 101 - Kinematics" }
+        slug: { type: string, example: physics-101-kinematics }
+        description: { type: string, example: "Workspace for building Physics 101 lessons." }
+        ownerId: { type: string, example: user_f87ab2 }
+        createdAt: { type: string, format: date-time, example: 2025-09-01T09:10:00Z }
+        updatedAt: { type: string, format: date-time, example: 2025-09-01T09:15:00Z }
+        activeVersionId: { type: string, example: ver_8f3c2d1 }
+        tags:
+          type: array
+          items: { type: string }
+          example: ["physics", "grade-10"]
+      required: [id, name, ownerId, createdAt]
+    DeskCreateRequest:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      required: [name]
+    DeskUpdateRequest:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+      additionalProperties: false
+    ActivityEvent:
+      type: object
+      properties:
+        id: { type: string, example: act_93ac11 }
+        deskId: { type: string, example: desk_a12bc3 }
+        versionId: { type: string, example: ver_8f3c2d1 }
+        type: { type: string, example: content.updated }
+        actorId: { type: string, example: user_f87ab2 }
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            field: title
+            oldValue: "Kinematics"
+            newValue: "Kinematics & Motion"
+        createdAt: { type: string, format: date-time, example: 2025-09-01T10:48:00Z }
+      required: [id, deskId, type, actorId, createdAt]
+    PublishRequest:
+      type: object
+      properties:
+        note: { type: string, example: "Release for review" }
+      required: [note]
+
+paths:
+  /desks:
+    get:
+      summary: List desks
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: tag
+          schema: { type: string }
+      responses:
+        '200':
+          description: Successful list
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: OK
+                    data:
+                      items:
+                        - id: desk_a12bc3
+                          name: "Physics 101 - Kinematics"
+                          slug: physics-101-kinematics
+                          description: Workspace for building Physics 101 lessons.
+                          ownerId: user_f87ab2
+                          createdAt: 2025-09-01T09:10:00Z
+                          updatedAt: 2025-09-01T09:15:00Z
+                          activeVersionId: ver_8f3c2d1
+                          tags: [physics, grade-10]
+                      meta:
+                        page: 1
+                        limit: 20
+                        totalItems: 1
+                        totalPages: 1
+                        hasNext: false
+                        hasPrev: false
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Create desk
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DeskCreateRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: Created
+                    data:
+                      id: desk_a12bc3
+                      name: Physics 101 - Kinematics
+                      slug: physics-101-kinematics
+                      description: Workspace for building Physics 101 lessons.
+                      ownerId: user_f87ab2
+                      createdAt: 2025-09-01T09:10:00Z
+                      updatedAt: 2025-09-01T09:10:00Z
+                      activeVersionId: null
+                      tags: [physics, grade-10]
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /desks/{deskId}:
+    get:
+      summary: Get desk by id
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      id: desk_a12bc3
+                      name: Physics 101 - Kinematics
+                      slug: physics-101-kinematics
+                      description: Workspace for building Physics 101 lessons.
+                      ownerId: user_f87ab2
+                      createdAt: 2025-09-01T09:10:00Z
+                      updatedAt: 2025-09-01T09:15:00Z
+                      activeVersionId: ver_8f3c2d1
+                      tags: [physics, grade-10]
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Update desk
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DeskUpdateRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: Updated
+                    data:
+                      id: desk_a12bc3
+                      name: Physics 101 - Kinematics (edited)
+                      slug: physics-101-kinematics
+                      description: Workspace for building Physics 101 lessons.
+                      ownerId: user_f87ab2
+                      createdAt: 2025-09-01T09:10:00Z
+                      updatedAt: 2025-09-01T10:00:00Z
+                      activeVersionId: ver_8f3c2d1
+                      tags: [physics, grade-10]
+        '400': { $ref: '#/components/responses/BadRequest' }
+    delete:
+      summary: Delete desk
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: Deleted (no content body)
+        '404': { $ref: '#/components/responses/NotFound' }
+  /desks/{deskId}/versions:
+    get:
+      summary: List versions for desk
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        '200':
+          description: Version list
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - id: ver_8f3c2d1
+                          deskId: desk_a12bc3
+                          number: 5
+                          name: Initial draft
+                          status: draft
+                          createdBy: user_f87ab2
+                          createdAt: 2025-09-01T10:45:12Z
+                          updatedAt: 2025-09-01T11:00:00Z
+                          changeSummary: Added lesson objectives and assessment outline.
+                      meta:
+                        page: 1
+                        limit: 20
+                        totalItems: 1
+                        totalPages: 1
+                        hasNext: false
+                        hasPrev: false
+    post:
+      summary: Create version (fork from active state)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VersionCreateRequest' }
+      responses:
+        '201':
+          description: Version created
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: Created
+                    data:
+                      id: ver_9a41b2c
+                      deskId: desk_a12bc3
+                      number: 6
+                      name: Initial draft
+                      status: draft
+                      createdBy: user_f87ab2
+                      createdAt: 2025-09-01T12:05:00Z
+                      updatedAt: 2025-09-01T12:05:00Z
+                      changeSummary: Seed content
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /desks/{deskId}/versions/{versionId}:
+    get:
+      summary: Get version
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: versionId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Found
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      id: ver_8f3c2d1
+                      deskId: desk_a12bc3
+                      number: 5
+                      name: Initial draft
+                      status: draft
+                      createdBy: user_f87ab2
+                      createdAt: 2025-09-01T10:45:12Z
+                      updatedAt: 2025-09-01T11:00:00Z
+                      changeSummary: Added lesson objectives and assessment outline.
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      summary: Update version metadata
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/VersionUpdateRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: Updated
+                    data:
+                      id: ver_8f3c2d1
+                      deskId: desk_a12bc3
+                      number: 5
+                      name: Initial draft (renamed)
+                      status: draft
+                      createdBy: user_f87ab2
+                      createdAt: 2025-09-01T10:45:12Z
+                      updatedAt: 2025-09-01T12:10:00Z
+                      changeSummary: Clarified scope
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: Archive version
+      security: [{ bearerAuth: [] }]
+      responses:
+        '204': { description: Archived }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /desks/{deskId}/versions/{versionId}/publish:
+    post:
+      summary: Publish version (becomes active)
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PublishRequest' }
+      responses:
+        '200':
+          description: Published
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: Published
+                    data:
+                      id: ver_8f3c2d1
+                      deskId: desk_a12bc3
+                      number: 5
+                      name: Initial draft
+                      status: published
+                      publishedAt: 2025-09-01T12:30:00Z
+        '409': { $ref: '#/components/responses/Conflict' }
+  /desks/{deskId}/activity:
+    get:
+      summary: Activity timeline for desk (all versions)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - in: path
+          name: deskId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+        - in: query
+          name: type
+          schema: { type: string, description: Filter by event type }
+      responses:
+        '200':
+          description: Activity list
+          content:
+            application/json:
+              examples:
+                default:
+                  value:
+                    success: true
+                    data:
+                      items:
+                        - id: act_93ac11
+                          deskId: desk_a12bc3
+                          versionId: ver_8f3c2d1
+                          type: content.updated
+                          actorId: user_f87ab2
+                          metadata:
+                            field: title
+                            oldValue: Kinematics
+                            newValue: Kinematics & Motion
+                          createdAt: 2025-09-01T10:48:00Z
+                      meta:
+                        page: 1
+                        limit: 20
+                        totalItems: 1
+                        totalPages: 1
+                        hasNext: false
+                        hasPrev: false
+
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                success: false
+                message: Unauthorized
+                errorCode: UNAUTHORIZED
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                success: false
+                message: Invalid input
+                errorCode: BAD_REQUEST
+                errors:
+                  - field: name
+                    message: Must not be empty
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                success: false
+                message: Version already published
+                errorCode: CONFLICT
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          examples:
+            default:
+              value:
+                success: false
+                message: Resource not found
+                errorCode: NOT_FOUND

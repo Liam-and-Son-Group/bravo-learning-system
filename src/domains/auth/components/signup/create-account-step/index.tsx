@@ -2,9 +2,9 @@ import { Input } from "@/shared/components/ui/input";
 import { SelectField } from "@/shared/components/ui/select";
 
 import { User, Briefcase, Mail, Lock } from "lucide-react";
-import { COUNT_COUNTRIES, TIMEZONES } from "../const";
+import { CONST_COUNTRIES, TIMEZONES } from "../const";
 import { Label } from "@/shared/components/ui/label";
-import { AvatarUploader } from "@/shared/components/ui/upload";
+import { AvatarUploaderWithCrop } from "@/shared/components/ui/avatar-uploader-with-crop";
 import { Controller } from "react-hook-form";
 import type { TFormCreateAccountValues } from "./hook";
 import useCreateAccount from "./hook";
@@ -33,12 +33,14 @@ const CreateAccountStep = forwardRef(function CreateAccountStep(
           name="avatar"
           control={control}
           render={({ field }) => (
-            <AvatarUploader
+            <AvatarUploaderWithCrop
               showPreview
               value={field.value}
               variant="circle"
               size="lg"
               placeholder="Avatar"
+              enableCrop={true}
+              cropAspectRatio={1}
               onChange={handleAvatarChange}
             />
           )}
@@ -135,7 +137,7 @@ const CreateAccountStep = forwardRef(function CreateAccountStep(
               <SelectField
                 label="Nation / Region"
                 id="country"
-                options={COUNT_COUNTRIES}
+                options={CONST_COUNTRIES}
                 value={field.value}
                 onChange={field.onChange}
                 error={errors.country?.message}
