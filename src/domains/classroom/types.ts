@@ -7,6 +7,7 @@ export interface Classroom {
   description?: string;
   organizationId: string;
   organizationName: string;
+  organizationLogo?: string; // optional logo URL
   studentsCount: number;
   createdAt: string; // ISO date
   status: ClassroomStatus;
@@ -36,7 +37,7 @@ export interface UpdateClassroomPayload {
 }
 
 export interface ClassroomListFilters {
-  scope: "mine" | "organizations";
+  scope: "mine" | "organizations" | "shared";
   search?: string;
   sort?: "name" | "createdAt" | "studentsCount";
   order?: "asc" | "desc";

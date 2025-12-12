@@ -53,7 +53,7 @@ export function CreateClassroomDialog({ organizations, onCreated }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">Create Classroom</Button>
+        <Button>Create Classroom</Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>

@@ -20,24 +20,29 @@ export type TLoginResponse = {
   refresh_token?: string;
 };
 
+// Raw login API response (new backend contract)
+export type TRawLoginApiResponse = {
+  success: boolean;
+  message?: string;
+  data?: {
+    accessToken?: string;
+    refreshToken?: string;
+  };
+};
+
 export type TUserProfileResponse = {
   id: string;
   fullname: string;
   email: string;
-  job_title: string;
   country: string;
-  role_id: string;
+  authId: string;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
   role: {
-    ID: string;
+    id: string;
     Name: string;
   };
-  auth_id: string;
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
-};
-
-export type TCheckToken = {
-  verify: string;
+  organizationId: string | null;
 };
 
 // ---------------------------------------------

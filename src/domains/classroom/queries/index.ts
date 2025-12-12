@@ -15,31 +15,41 @@ import type {
 } from "../types";
 
 export const CLASSROOM_QUERY_KEYS = {
-  list: (filters: ClassroomListFilters) => ["classrooms", filters] as const,
-  detail: (id: string) => ["classroom", id] as const,
-  students: (id: string) => ["classroom", id, "students"] as const,
+  list: (filters: ClassroomListFilters, organizationId: string) =>
+    ["classrooms", filters, organizationId] as const,
+  detail: (id: string, organizationId: string) =>
+    ["classroom", id, organizationId] as const,
+  students: (id: string, organizationId: string) =>
+    ["classroom", id, "students", organizationId] as const,
 };
 
-export function useClassroomsQuery(filters: ClassroomListFilters) {
+export function useClassroomsQuery(
+  filters: ClassroomListFilters,
+  organizationId: string | null
+) {
   return useQuery({
-    queryKey: CLASSROOM_QUERY_KEYS.list(filters),
-    queryFn: () => fetchClassrooms(filters),
+    queryKey: CLASSROOM_QUERY_KEYS.list(filters, organizationId || ""),
+    queryFn: () => fetchClassrooms(filters, organizationId!),
+    enabled: !!organizationId,
   });
 }
 
-export function useClassroomQuery(id: string) {
+export function useClassroomQuery(id: string, organizationId: string | null) {
   return useQuery({
-    queryKey: CLASSROOM_QUERY_KEYS.detail(id),
-    queryFn: () => fetchClassroom(id),
-    enabled: !!id,
+    queryKey: CLASSROOM_QUERY_KEYS.detail(id, organizationId || ""),
+    queryFn: () => fetchClassroom(id, organizationId!),
+    enabled: !!id && !!organizationId,
   });
 }
 
-export function useClassroomStudentsQuery(id: string) {
+export function useClassroomStudentsQuery(
+  id: string,
+  organizationId: string | null
+) {
   return useQuery({
-    queryKey: CLASSROOM_QUERY_KEYS.students(id),
-    queryFn: () => fetchClassroomStudents(id),
-    enabled: !!id,
+    queryKey: CLASSROOM_QUERY_KEYS.students(id, organizationId || ""),
+    queryFn: () => fetchClassroomStudents(id, organizationId!),
+    enabled: !!id && !!organizationId,
   });
 }
 
@@ -63,5 +73,15 @@ export function useToggleClassroomStatusMutation() {
 }
 
 export function useLeaveClassroomMutation() {
-  return useMutation({ mutationFn: (id: string) => leaveClassroom(id) });
+  return useMutation({
+    mutationFn: ({
+      classroomId,
+      userId,
+      organizationId,
+    }: {
+      classroomId: string;
+      userId: string;
+      organizationId: string;
+    }) => leaveClassroom(classroomId, userId, organizationId),
+  });
 }

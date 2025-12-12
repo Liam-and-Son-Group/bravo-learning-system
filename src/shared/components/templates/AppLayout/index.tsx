@@ -1,23 +1,28 @@
 import LogoSVG from "@/assets/svg/logo";
 import { Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
-  AppWindow,
   BookAlertIcon,
-  BookType,
-  CheckCircle,
   ChevronRight,
   GitBranchIcon,
-  RocketIcon,
+  Menu,
   Search,
   SettingsIcon,
-  ToyBrick,
-  UsersRound,
 } from "lucide-react";
 import { useState, type ComponentType } from "react";
 import { cn } from "@/shared/lib/utils/mergeClass";
 import { SharedTooltip } from "../../ui/tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { Card, CardContent } from "../../ui/card";
+import { Button } from "../../ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../../ui/sheet";
+import ProtectedNav from "@/shared/components/navigation/ProtectedNav";
+import { PROTECTED_NAV_ITEMS } from "@/shared/constants/nav";
+import { UserMenu } from "@/shared/components/user-menu";
 
 type TTemplateAction = {
   title: string;
@@ -26,50 +31,31 @@ type TTemplateAction = {
   href?: string;
 };
 
-const NAVIGATION_ACTIONS: TTemplateAction[] = [
-  {
-    title: "Dashboard",
-    Icon: AppWindow,
-    href: "/",
-  },
-  {
-    title: "Class",
-    Icon: UsersRound,
-    href: "/classrooms",
-  },
-  {
-    title: "Authoring",
-    Icon: BookType,
-    href: "/authoring",
-  },
-  {
-    title: "Assignment",
-    Icon: CheckCircle,
-    href: "/classes",
-  },
-  {
-    title: "Modules",
-    Icon: ToyBrick,
-    href: "/classes",
-  },
-];
+// NOTE: Desktop still uses inline nav (legacy structure) for now. Data source unified in PROTECTED_NAV_ITEMS.
+const NAVIGATION_ACTIONS: TTemplateAction[] = PROTECTED_NAV_ITEMS.map((i) => ({
+  title: i.title,
+  href: i.href,
+  Icon: i.Icon as ComponentType<{ className: string }>,
+}));
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [openDrawer, setOpenDrawer] = useState(false);
+
   const activeRoute = location.pathname;
-  const [_, setOpenSearchDialog] = useState<boolean>(false);
 
   const settingActions: TTemplateAction[] = [
     {
       title: "Search",
       Icon: Search,
-      onClick: () => setOpenSearchDialog(true),
+      onClick: () => {},
     },
     {
       title: "Documentation",
       Icon: BookAlertIcon,
-      onClick: () => setOpenSearchDialog(true),
+      onClick: () => {},
     },
     {
       title: "Settings",
@@ -78,72 +64,120 @@ export default function AppLayout() {
     },
   ];
 
-  const renderNavigations = NAVIGATION_ACTIONS.map((item, idx) => (
-    <button
+  const renderNavigations = NAVIGATION_ACTIONS.map((item) => (
+    <Button
+      variant={activeRoute === item.href ? "secondary" : "ghost"}
       className={cn(
-        "flex items-center justify-center h-[28px] text-sm px-3 rounded-lg",
+        "flex items-center h-[28px] text-sm px-3 text-black",
         activeRoute === item.href &&
-          "bg-blue-300/50 text-blue-600 border-blue-600 border-[1px]"
+          "bg-blue-300/50 text-blue-600 border-blue-600 border"
       )}
-      key={idx}
+      key={item.href}
       onClick={() => navigate({ to: item.href })}
     >
       {item.Icon && <item.Icon className="mr-2 h-4 w-4" />}
       {item.title}
-    </button>
+    </Button>
   ));
 
-  const renderSettingActions = settingActions.map((item, idx) => (
-    <SharedTooltip key={idx} label={item.title}>
-      <button className="text-primary">
+  const renderSettingActions = settingActions.map((item) => (
+    <SharedTooltip key={item.title} label={item.title}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="text-primary w-7 h-7"
+        onClick={item.onClick}
+      >
         {item.Icon && <item.Icon className="w-4 h-4" />}
-      </button>
+      </Button>
     </SharedTooltip>
   ));
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <header className="w-full px-5 py-3 text-primary-foreground flex justify-between items-center">
-        <div className="relative flex h-[28px] items-center gap-2 text-black">
-          <LogoSVG className="text-black w-[70px] left-4 h-auto absolute" />
-          <div className="flex items-center pl-[120px] gap-1">
+      <header className="w-full px-3 md:px-5 py-3 text-primary-foreground flex justify-between items-center border-b">
+        <div className="flex items-center gap-2 w-full">
+          {/* Mobile / Tablet: Hamburger */}
+          <div className="md:hidden flex items-center">
+            <Sheet open={openDrawer} onOpenChange={setOpenDrawer}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open navigation"
+                >
+                  <Menu className="h-5 w-5 text-black" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="left"
+                className="flex flex-col gap-4 p-4 w-72"
+              >
+                <SheetHeader className="items-start text-left">
+                  <SheetTitle className="flex items-center gap-2">
+                    <LogoSVG className="text-black w-[60px] h-auto" />
+                    <span className="font-semibold">Menu</span>
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col gap-2">
+                  <ProtectedNav onNavigate={() => setOpenDrawer(false)} />
+                </nav>
+                <div className="pt-2 flex flex-col gap-1 border-t mt-2">
+                  <p className="text-xs font-medium text-muted-foreground pt-2 px-1">
+                    Quick Actions
+                  </p>
+                  <div className="flex gap-2 flex-wrap">
+                    {renderSettingActions}
+                  </div>
+                </div>
+                <div className="mt-auto border-t pt-4">
+                  <UserMenu />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+          {/* Logo (clickable) */}
+          <Button
+            variant="ghost"
+            type="button"
+            aria-label="Go to home"
+            onClick={() => navigate({ to: accessToken ? "/" : "/login" })}
+            className="p-0 hover:bg-transparent focus-visible:ring-0"
+          >
+            <LogoSVG className="text-black !w-[70px] !h-auto" />
+          </Button>
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-1 ml-4">
             {renderNavigations}
           </div>
         </div>
-        <div className="flex items-center justify-between gap-5">
+        <div className="flex items-center gap-5">
           <SharedTooltip label="You're in Project Name with master branch">
             <div
               className="border-[1px] border-green-600 bg-green-400/30
-             text-green-700 rounded-md px-2 flex items-center gap-2 h-[30px] 
-             min-w-[200px] w-full text-sm cursor-pointer"
+             text-green-700 rounded-md px-2 flex items-center gap-2 h-[30px]
+             min-w-[160px] w-full text-sm cursor-pointer"
             >
-              <p className="max-w-[150px] line-clamp-1 text-ellipsis overflow-hidden">
+              <p className="max-w-[120px] line-clamp-1 text-ellipsis overflow-hidden">
                 Project Name
               </p>
               <ChevronRight size={16} />
               <div className="flex items-center gap-1">
-                <p className="max-w-[100px] overflow-hidden text-ellipsis line-clamp-1">
+                <p className="max-w-[80px] overflow-hidden text-ellipsis line-clamp-1">
                   master
                 </p>
                 <GitBranchIcon size={16} />
               </div>
             </div>
           </SharedTooltip>
-          <div className="flex items-center justify-between gap-5">
+          <div className="hidden md:flex items-center gap-5">
             {renderSettingActions}
           </div>
-          <SharedTooltip label="Profile settings">
-            <Avatar className="w-7 h-7">
-              <AvatarImage
-                src="https://avatars.githubusercontent.com/u/66240966?v=4"
-                alt="@avatar"
-              />
-              <AvatarFallback>LN</AvatarFallback>
-            </Avatar>
-          </SharedTooltip>
+          {/* User Menu Popover */}
+          <UserMenu />
         </div>
       </header>
-      <main className="flex-1 px-6 py-1">
+      <main className="flex-1 px-3 md:px-6 py-1">
         <Card>
           <CardContent className="h-[calc(100vh-90px)] py-0 px-0">
             <Outlet />

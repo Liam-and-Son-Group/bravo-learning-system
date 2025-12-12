@@ -1,5 +1,5 @@
 import type { TStep } from "@/shared/components/ui/stepper";
-import { Shield, Building2, Phone, FileText, Users, Plane } from "lucide-react";
+import { Shield, Building2, Users, Plane } from "lucide-react";
 
 export const CONST_SIGNUP_STEP: TStep[] = [
   {

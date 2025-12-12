@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { checkToken, getUser, login, signupFull } from "../apis";
+import { getUser, login, signupFull } from "../apis";
 import type { AxiosError } from "axios";
-import { useAuthStore } from "../storage";
 import type {
   TLoginResponse,
   TSignupFullRequest,
@@ -19,15 +18,15 @@ export const TOKEN_KEY_NAME = "token";
 
 export const useLoginMutation = (params?: TParams) => {
   const { onSuccess, onError } = params || {};
-  const { renewToken } = useAuthStore();
   return useMutation({
     mutationKey: ["login-action"],
     mutationFn: login,
     onSuccess: (data: TReponse<TLoginResponse>) => {
-      renewToken({
-        accessToken: data.body.access_token,
-        refreshToken: data.body.refresh_token || "",
-      });
+      if (!data?.body?.access_token) {
+        const error = new Error("Invalid login response: missing access token");
+        onError?.(error);
+        return;
+      }
       onSuccess?.(data.body);
     },
     onError: (error: AxiosError) => {
@@ -40,18 +39,17 @@ export const useFullSignupMutation = (params?: {
   onSuccess?: (data: TSignupFullResponse) => void;
   onError?: (error: AxiosError) => void;
 }) => {
-  const { renewToken } = useAuthStore();
   return useMutation({
     mutationKey: ["signup-full"],
     mutationFn: (payload: TSignupFullRequest) => signupFull(payload),
     onSuccess: (res: TReponse<TSignupFullResponse>) => {
-      // If backend returns tokens, persist them
+      // If backend returns tokens, save them to localStorage
       const { access_token, refresh_token } = res.body;
       if (access_token) {
-        renewToken({
-          accessToken: access_token,
-          refreshToken: refresh_token || "",
-        });
+        localStorage.setItem("access_token", access_token);
+        if (refresh_token) {
+          localStorage.setItem("refresh_token", refresh_token);
+        }
       }
       params?.onSuccess?.(res.body);
     },
@@ -66,14 +64,5 @@ export const useGetUser = ({ enabled }: { enabled: boolean }) =>
   useQuery({
     queryKey: [USER_QUERIES_KEY_NAME],
     queryFn: () => getUser(),
-    enabled,
-  });
-
-export const useCheckToken = (enabled: boolean) =>
-  useQuery({
-    queryKey: [TOKEN_KEY_NAME],
-    queryFn: () => checkToken(),
-    refetchOnWindowFocus: true,
-    refetchInterval: 6000,
     enabled,
   });

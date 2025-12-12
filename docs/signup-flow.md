@@ -1,8 +1,22 @@
 # Bravo Learning System - SignUp Flow Documentation
 
+> **⚠️ DEPRECATION NOTICE**  
+> This document describes a **planned/legacy architecture** that is **NOT currently implemented**.  
+> For the **actual implementation**, see: [`signup-flow-actual.md`](./signup-flow-actual.md)
+>
+> **Key Differences:**
+>
+> - This doc: 5 separate steps with individual API endpoints
+> - Actual implementation: 4-step wizard with single combined endpoint `/authentication/signup`
+> - Email verification: This doc shows it as a blocking step; actual implementation sends verification email after signup (non-blocking)
+
+---
+
 ## Overview
 
 The signup process for Bravo Learning System is designed to create a new educational organization account with proper user roles and permissions. The process is divided into multiple steps to ensure comprehensive data collection while maintaining a good user experience.
+
+**NOTE**: This is a planned architecture for reference. The current system uses a simplified approach.
 
 ## 1. Initial Registration
 

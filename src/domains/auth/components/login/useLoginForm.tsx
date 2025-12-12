@@ -4,9 +4,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { toast } from "sonner";
 import { type AxiosError } from "axios";
-import { capitalizeFirstLetter } from "@/shared/lib/utils/stringify";
 import { useNavigate } from "@tanstack/react-router";
-import { useAuthStore } from "../../storage";
 
 export const loginFormSchema = z.object({
   username: z.string().email("Invalid email address"),
@@ -17,31 +15,53 @@ export const loginFormSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export const useLoginForm = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { setUserData } = useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const { mutateAsync, isPending } = useLoginMutation({
     onError(err) {
-      const error = err as AxiosError<{ message: string }, { message: string }>;
-      const message = error.response?.data?.message || "Unknown error occurred";
-      const stringifyMessage = capitalizeFirstLetter(message);
+      const error = err as AxiosError<{ message: string }>;
+      const message =
+        error.response?.data?.message || "Login failed. Please try again.";
 
-      toast("Login failed", {
-        description: <p className="text-xs">{stringifyMessage}</p>,
+      toast.error("Login failed", {
+        description: <p className="text-xs">{message}</p>,
       });
     },
 
     onSuccess(data) {
-      toast.success("Login successful", {
+      console.log("✅ [LOGIN SUCCESS] Received data:", {
+        hasAccessToken: !!data.access_token,
+        hasRefreshToken: !!data.refresh_token,
+      });
+
+      // Save tokens to localStorage
+      console.log("💾 [LOGIN SUCCESS] Saving access_token to localStorage...");
+      localStorage.setItem("access_token", data.access_token);
+      console.log(
+        "💾 [LOGIN SUCCESS] access_token saved:",
+        localStorage.getItem("access_token") ? "✅ CONFIRMED" : "❌ FAILED"
+      );
+
+      if (data.refresh_token) {
+        console.log(
+          "💾 [LOGIN SUCCESS] Saving refresh_token to localStorage..."
+        );
+        localStorage.setItem("refresh_token", data.refresh_token);
+        console.log(
+          "💾 [LOGIN SUCCESS] refresh_token saved:",
+          localStorage.getItem("refresh_token") ? "✅ CONFIRMED" : "❌ FAILED"
+        );
+      }
+
+      toast.success("Welcome back!", {
         description: (
-          <p className="text-xs">
-            Welcome back! You have logged in successfully.
-          </p>
+          <p className="text-xs">You have logged in successfully.</p>
         ),
       });
-      localStorage.setItem("access_token", data?.access_token || "");
-      localStorage.setItem("refresh_token", data?.access_token || "");
+
+      // Navigate to home
+      console.log("🚀 [LOGIN SUCCESS] Navigating to / with replace: true");
       navigate({ to: "/", replace: true });
     },
   });
@@ -50,20 +70,11 @@ export const useLoginForm = () => {
     defaultValues: {
       username: "",
       password: "",
-      // remember: false,
     },
   });
 
-  const onSubmit = async (value: LoginFormValues) => {
-    setUserData({
-      id: "",
-      country: "",
-      email: value.username,
-      fullname: "",
-      jobTitle: "",
-      username: "",
-    });
-    mutateAsync(value);
+  const onSubmit = async (values: LoginFormValues) => {
+    await mutateAsync(values);
   };
 
   const redirectToSignup = () => navigate({ to: "/signup" });

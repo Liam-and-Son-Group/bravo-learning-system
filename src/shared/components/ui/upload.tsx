@@ -1,5 +1,4 @@
 import {
-  User,
   Upload,
   X,
   Check,
