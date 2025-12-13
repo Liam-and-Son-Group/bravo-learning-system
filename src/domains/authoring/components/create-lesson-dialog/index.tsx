@@ -59,25 +59,32 @@ export function CreateLessonDialog({
     useState<CreateLessonFormData>(DEFAULT_FORM_DATA);
 
   const handleTypeSelect = (type: LessonType) => {
-    setFormData((prev) => ({ ...prev, type }));
+    setFormData(
+      (prev: CreateLessonFormData): CreateLessonFormData => ({ ...prev, type })
+    );
   };
 
   const handleFieldChange = (
     field: keyof CreateLessonFormData,
     value: string
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(
+      (prev: CreateLessonFormData): CreateLessonFormData => ({
+        ...prev,
+        [field]: value,
+      })
+    );
   };
 
   const handleNext = () => {
     if (currentStep === 0 && !formData.type) {
       return; // Guard: type must be selected
     }
-    setCurrentStep((prev) => prev + 1);
+    setCurrentStep((prev: number): number => prev + 1);
   };
 
   const handleBack = () => {
-    setCurrentStep((prev) => Math.max(0, prev - 1));
+    setCurrentStep((prev: number): number => Math.max(0, prev - 1));
   };
 
   const handleCreate = () => {
@@ -123,7 +130,7 @@ export function CreateLessonDialog({
             {formData.type && (
               <>
                 {(() => {
-                  const Icon = TYPE_ICONS[formData.type];
+                  const Icon = TYPE_ICONS[formData.type as LessonType];
                   return <Icon className="h-5 w-5" />;
                 })()}
               </>

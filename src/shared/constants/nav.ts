@@ -17,6 +17,6 @@ export const PROTECTED_NAV_ITEMS: ProtectedNavItem[] = [
   { title: "Dashboard", href: "/", Icon: AppWindow },
   { title: "Class", href: "/classrooms", Icon: UsersRound },
   { title: "Authoring", href: "/authoring", Icon: BookType },
-  { title: "Assignment", href: "/classes", Icon: CheckCircle },
-  { title: "Modules", href: "/classes", Icon: ToyBrick },
+  { title: "Assignment", href: "/assignments", Icon: CheckCircle },
+  { title: "Modules", href: "/modules", Icon: ToyBrick },
 ];

@@ -66,6 +66,10 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
   const [lessonToDelete, setLessonToDelete] = useState<any>(null);
 
   const handleEdit = (lessonId: string) => {
+    if (!lessonId) {
+      toast.error("Invalid lesson ID");
+      return;
+    }
     navigate({
       to: "/authoring/compose/$lessonId",
       params: { lessonId },
@@ -73,7 +77,8 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
   };
 
   const handleView = () => {
-    navigate({ to: "/404" });
+    // TODO: Implement view functionality
+    toast.info("View functionality not yet implemented");
   };
 
   const handleDeleteClick = (lesson: any) => {

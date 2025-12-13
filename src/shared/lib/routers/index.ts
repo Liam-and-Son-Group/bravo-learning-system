@@ -37,25 +37,11 @@ export const nonAuthenticateRoute = createRoute({
   id: "non-auth",
   getParentRoute: () => rootRoute,
   component: NonAuthTemplate,
-  beforeLoad: ({ location }) => {
-    console.log(
-      "🔓 [NON-AUTH ROUTE] beforeLoad triggered, pathname:",
-      location.pathname
-    );
+  beforeLoad: () => {
     const token = getAccessToken();
-    console.log(
-      "🔓 [NON-AUTH ROUTE] Token from getAccessToken():",
-      token ? "✅ EXISTS" : "❌ NULL"
-    );
-
     if (token) {
-      console.log("🔓 [NON-AUTH ROUTE] Token exists, redirecting to /");
       throw redirect({ to: "/", replace: true });
     }
-
-    console.log(
-      "🔓 [NON-AUTH ROUTE] No token, allowing access to non-auth page"
-    );
   },
 });
 
@@ -63,25 +49,11 @@ export const authenticatedRoute = createRoute({
   id: "auth",
   getParentRoute: () => rootRoute,
   component: AppLayout,
-  beforeLoad: ({ location }) => {
-    console.log(
-      "🔒 [AUTH ROUTE] beforeLoad triggered, pathname:",
-      location.pathname
-    );
+  beforeLoad: () => {
     const token = getAccessToken();
-    console.log(
-      "🔒 [AUTH ROUTE] Token from getAccessToken():",
-      token ? "✅ EXISTS" : "❌ NULL"
-    );
-
     if (!token) {
-      console.log("🔒 [AUTH ROUTE] No token, redirecting to /login");
       throw redirect({ to: "/login", replace: true });
     }
-
-    console.log(
-      "🔒 [AUTH ROUTE] Token exists, allowing access to protected page"
-    );
   },
 });
 

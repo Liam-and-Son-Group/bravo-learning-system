@@ -17,7 +17,7 @@ export const authoringIndexRouter = createRoute({
 });
 
 export const composeRouter = createRoute({
-  path: "compose/$lessonId",
+  path: "/compose/$lessonId",
   getParentRoute: () => authoringRouter,
   component: ComposePage,
 });
