@@ -45,7 +45,7 @@ export const updateLessonContent = async (
   content: {
     blocks: ContentBlock[];
     updatedAt: number;
-  }
+  },
 ) => {
   return authInstance.patch(`/lessons/${lessonId}/content`, content);
 };
@@ -60,7 +60,7 @@ export const saveLessonVersion = async (
     branchId: string;
     versionName: string;
     blocks: ContentBlock[];
-  }
+  },
 ) => {
   return authInstance.post(`/lessons/${lessonId}/versions`, data);
 };
@@ -76,7 +76,7 @@ export const createBranch = async (
     name: string;
     message?: string;
     sourceBranchId?: string;
-  }
+  },
 ) => {
   return authInstance.post(`/lessons/${lessonId}/branches`, data);
 };
@@ -87,14 +87,14 @@ export const getBranchContent = async (lessonId: string, branchId: string) => {
 
 export const getBranchVersionHistory = async (
   lessonId: string,
-  branchId: string
+  branchId: string,
 ) => {
   return authInstance.get(`/lessons/${lessonId}/branches/${branchId}/versions`);
 };
 
 export const getVersionDetails = async (
   lessonId: string,
-  versionId: string
+  versionId: string,
 ) => {
   return authInstance.get(`/lessons/${lessonId}/versions/${versionId}`);
 };
@@ -102,11 +102,11 @@ export const getVersionDetails = async (
 export const mergeBranch = async (
   lessonId: string,
   sourceBranchId: string,
-  targetBranchId?: string
+  targetBranchId?: string,
 ) => {
   return authInstance.post(
     `/lessons/${lessonId}/branches/${sourceBranchId}/merge`,
-    { targetBranchId }
+    { targetBranchId },
   );
 };
 
@@ -122,4 +122,13 @@ export const deleteLesson = async (lessonId: string, permanent = false) => {
   return authInstance.delete(`/lessons/${lessonId}`, {
     params: { permanent },
   });
+};
+
+// Versioning Service APIs
+export const getLessonVersionGraph = async (lessonId: string) => {
+  return authInstance.get(`/versioning/lessons/${lessonId}/graph`);
+};
+
+export const deleteWorkingDesk = async (deskId: string) => {
+  return authInstance.delete(`/versioning/desks/${deskId}`);
 };

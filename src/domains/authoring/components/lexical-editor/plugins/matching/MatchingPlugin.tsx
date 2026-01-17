@@ -127,7 +127,7 @@ function MatchingEditor({
 
   const updateItem = (id: string, field: "left" | "right", value: string) => {
     const updated = items.map((item) =>
-      item.id === id ? { ...item, [field]: value } : item
+      item.id === id ? { ...item, [field]: value } : item,
     );
     setItems(updated);
     onChange({ ...data, items: updated });
@@ -135,7 +135,7 @@ function MatchingEditor({
 
   const updateCorrectAnswer = (leftItemId: string, rightItemId: string) => {
     const updated = items.map((item) =>
-      item.id === leftItemId ? { ...item, correctAnswerId: rightItemId } : item
+      item.id === leftItemId ? { ...item, correctAnswerId: rightItemId } : item,
     );
     setItems(updated);
     onChange({ ...data, items: updated });
@@ -333,7 +333,7 @@ function MatchingEditor({
           <div className="space-y-3 pt-2">
             {items.map((item, index) => {
               const correctAnswer = items.find(
-                (i) => i.id === item.correctAnswerId
+                (i) => i.id === item.correctAnswerId,
               );
 
               return (
@@ -510,7 +510,7 @@ function MatchingPreview({
   blockId?: string;
 }) {
   const [connections, setConnections] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
   const [drawingFrom, setDrawingFrom] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -677,12 +677,12 @@ function MatchingPreview({
                   key={item.id}
                   id={`${blockId}-left-${item.id}`}
                   onClick={() => handleLeftClick(item.id)}
-                  className={`p-3 border-2 rounded cursor-pointer transition-all ${
+                  className={`flex p-3 border-2 rounded cursor-pointer transition-all ${
                     isSelected
                       ? "bg-blue-200 border-blue-500 shadow-lg"
                       : isConnected
-                      ? "bg-blue-100 border-blue-400"
-                      : "bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300"
+                        ? "bg-blue-100 border-blue-400"
+                        : "bg-blue-50 border-blue-200 hover:bg-blue-100 hover:border-blue-300"
                   }`}
                 >
                   <span className="mr-2">{index + 1}.</span>
@@ -694,7 +694,7 @@ function MatchingPreview({
           <div className="space-y-2">
             {rightItems.map((item) => {
               const isConnected = Array.from(connections.values()).includes(
-                item.id
+                item.id,
               );
 
               return (

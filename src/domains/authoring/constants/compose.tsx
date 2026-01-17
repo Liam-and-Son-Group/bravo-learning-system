@@ -1,4 +1,13 @@
-import { Shuffle, PenLine, CheckSquare, Move } from "lucide-react";
+import {
+  Shuffle,
+  PenLine,
+  CheckSquare,
+  Move,
+  Code,
+  BarChart,
+  Layers,
+  ListOrdered,
+} from "lucide-react";
 import type {
   PluginConfig,
   Plugin,
@@ -10,6 +19,10 @@ import {
   FillInBlankPlugin as FillInBlankPluginNew,
   MultipleChoicePlugin as MultipleChoicePluginNew,
   DragDropPlugin as DragDropPluginNew,
+  CodeBlockPlugin as CodeBlockPluginNew,
+  PollPlugin as PollPluginNew,
+  FlashcardPlugin as FlashcardPluginNew,
+  OrderingPlugin as OrderingPluginNew,
 } from "../components/lexical-editor/plugins";
 
 /**
@@ -81,6 +94,53 @@ export const PLUGIN_CONFIGS: PluginConfig[] = [
     defaultData: {
       categories: [{ id: "1", name: "Category 1" }],
       items: [{ id: "1", text: "", categoryId: "1" }],
+    } as PluginData,
+  },
+  {
+    id: "code-block",
+    name: "Code Block",
+    icon: Code,
+    plugin: createPluginAdapter(CodeBlockPluginNew),
+    defaultData: {
+      code: "",
+      language: "javascript",
+    } as PluginData,
+  },
+  {
+    id: "poll",
+    name: "Poll",
+    icon: BarChart,
+    plugin: createPluginAdapter(PollPluginNew),
+    defaultData: {
+      question: "",
+      options: [
+        { id: "1", text: "Option 1" },
+        { id: "2", text: "Option 2" },
+      ],
+    } as PluginData,
+  },
+  {
+    id: "flashcard",
+    name: "Flashcard",
+    icon: Layers,
+    plugin: createPluginAdapter(FlashcardPluginNew),
+    defaultData: {
+      front: "",
+      back: "",
+    } as PluginData,
+  },
+  {
+    id: "ordering",
+    name: "Ordering",
+    icon: ListOrdered,
+    plugin: createPluginAdapter(OrderingPluginNew),
+    defaultData: {
+      question: "",
+      items: [
+        { id: "1", text: "Step 1" },
+        { id: "2", text: "Step 2" },
+        { id: "3", text: "Step 3" },
+      ],
     } as PluginData,
   },
 ];

@@ -23,9 +23,17 @@ import { useFolderTree } from "@/domains/folder/queries"; // Use folder domain
 import { CreateLessonDialog } from "../create-lesson-dialog";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { Folder, MoreHorizontal, Edit, Eye, Trash } from "lucide-react";
+import {
+  Folder,
+  MoreHorizontal,
+  Edit,
+  Eye,
+  Trash,
+  History,
+} from "lucide-react";
 import type { CreateLessonFormData } from "../../types/lesson-creation";
 import { useState } from "react";
+import { VersionGraphDialog } from "./VersionGraphDialog";
 
 // Helper function to flatten hierarchical folder tree
 interface FolderNode {
@@ -36,7 +44,7 @@ interface FolderNode {
 
 function flattenFolders(
   folders: FolderNode[],
-  level = 0
+  level = 0,
 ): { id: string; name: string }[] {
   const result: { id: string; name: string }[] = [];
 
@@ -65,6 +73,13 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lessonToDelete, setLessonToDelete] = useState<any>(null);
+  const [versionGraphOpen, setVersionGraphOpen] = useState(false);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
+
+  const handleVersionHistory = (lessonId: string) => {
+    setSelectedLessonId(lessonId);
+    setVersionGraphOpen(true);
+  };
 
   const handleEdit = (lessonId: string) => {
     if (!lessonId) {
@@ -153,6 +168,10 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
               <Eye className="h-4 w-4 mr-2" />
               View
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleVersionHistory(row.id)}>
+              <History className="h-4 w-4 mr-2" />
+              Version History
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleDeleteClick(row)}
               className="text-red-600"
@@ -184,7 +203,7 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
   // Find the selected folder name for display
   const findFolderById = (
     folders: FolderNode[],
-    id: string
+    id: string,
   ): FolderNode | null => {
     for (const folder of folders) {
       if (folder.id === id) return folder;
@@ -217,7 +236,7 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
       },
       onError: (error: any) => {
         toast.error(
-          error?.response?.data?.message || "Failed to create lesson"
+          error?.response?.data?.message || "Failed to create lesson",
         );
       },
     });
@@ -282,6 +301,14 @@ export default function MyLessons({ selectedFolderId }: MyLessonsProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {selectedLessonId && (
+        <VersionGraphDialog
+          open={versionGraphOpen}
+          onOpenChange={setVersionGraphOpen}
+          lessonId={selectedLessonId}
+        />
+      )}
     </div>
   );
 }

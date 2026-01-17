@@ -1,15 +1,13 @@
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
-import { Button } from "@/shared/components/ui/button";
-import { X } from "lucide-react";
+
 import type { ContentBlock } from "../lexical-editor";
-import type { PluginConfig } from "../../types/compose";
+import type { PluginConfig, PluginData } from "../../types/compose";
 
 interface ContentBlockCardProps {
   block: ContentBlock;
   pluginConfig: PluginConfig | undefined;
   mode: "edit" | "preview";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate: (id: string, data: any) => void;
+  onUpdate: (id: string, data: PluginData) => void;
   onRemove: (id: string) => void;
 }
 
@@ -24,6 +22,18 @@ export const ContentBlockCard = ({
     return null;
   }
 
+  if (mode === "edit") {
+    return (
+      <div id={block.id} className="scroll-mt-4 mb-4">
+        {pluginConfig.plugin.renderEditor({
+          data: block.data,
+          onChange: (data: PluginData) => onUpdate(block.id, data),
+          onRemove: () => onRemove(block.id),
+        })}
+      </div>
+    );
+  }
+
   const Icon = pluginConfig.icon;
 
   return (
@@ -33,28 +43,12 @@ export const ContentBlockCard = ({
           <Icon className="h-5 w-5" />
           <h3 className="font-semibold">{pluginConfig.name}</h3>
         </div>
-        {mode === "edit" && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onRemove(block.id)}
-            className="h-8 w-8 p-0"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
       </CardHeader>
       <CardContent>
-        {mode === "edit"
-          ? pluginConfig.plugin.renderEditor({
-              data: block.data,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange: (data: any) => onUpdate(block.id, data),
-            })
-          : pluginConfig.plugin.renderPreview({
-              data: block.data,
-              blockId: block.id,
-            })}
+        {pluginConfig.plugin.renderPreview({
+          data: block.data,
+          blockId: block.id,
+        })}
       </CardContent>
     </Card>
   );

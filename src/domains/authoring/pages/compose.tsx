@@ -48,6 +48,9 @@ export default function ComposePage() {
     openCreateBranchModal,
     handleCreateBranch,
     setIsCreateBranchModalOpen,
+    reorderContentBlocks,
+    duplicateContentBlock,
+    checkBlockValidation,
   } = useComposeContent({
     lessonId: lessonId || "",
     pluginConfigs: PLUGIN_CONFIGS,
@@ -81,7 +84,12 @@ export default function ComposePage() {
       <div className="flex flex-1 overflow-hidden">
         <ComposeSidebar
           pluginConfigs={PLUGIN_CONFIGS}
+          contentBlocks={contentBlocks}
           onAddBlock={addContentBlock}
+          onReorder={reorderContentBlocks}
+          onDuplicate={duplicateContentBlock}
+          onRemove={removeContentBlock}
+          checkValidation={checkBlockValidation}
         />
 
         <ComposeMainContent

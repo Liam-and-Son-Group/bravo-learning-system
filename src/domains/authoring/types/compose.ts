@@ -6,9 +6,13 @@ export type PluginType =
   | "matching"
   | "fill-in-blank"
   | "multiple-choice"
-  | "drag-drop";
+  | "drag-drop"
+  | "code-block"
+  | "poll"
+  | "flashcard"
+  | "ordering";
 
-export type TabType = "edit" | "preview";
+export type TabType = "edit" | "preview" | "live";
 
 // Plugin data types
 export interface MatchingData {
@@ -32,11 +36,35 @@ export interface DragDropData {
   pairs?: Array<{ draggable: string; dropzone: string }>;
 }
 
+export interface CodeBlockData {
+  code?: string;
+  language?: string;
+}
+
+export interface PollData {
+  question?: string;
+  options?: Array<{ id: string; text: string }>;
+}
+
+export interface FlashcardData {
+  front?: string;
+  back?: string;
+}
+
+export interface OrderingData {
+  question?: string;
+  items?: Array<{ id: string; text: string }>;
+}
+
 export type PluginData =
   | MatchingData
   | FillInBlankData
   | MultipleChoiceData
-  | DragDropData;
+  | DragDropData
+  | CodeBlockData
+  | PollData
+  | FlashcardData
+  | OrderingData;
 
 // Plugin renderer props
 export interface PluginEditorProps<T = PluginData> {

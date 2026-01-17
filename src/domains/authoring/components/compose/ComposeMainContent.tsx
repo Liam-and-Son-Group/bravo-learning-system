@@ -6,16 +6,16 @@ import {
 } from "@/shared/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import type { TabType, PluginConfig } from "../../types/compose";
+import type { TabType, PluginConfig, PluginData } from "../../types/compose";
 import type { ContentBlock } from "../lexical-editor";
+import { ContentBlockCard } from "./ContentBlockCard";
 
 interface ComposeMainContentProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
   contentBlocks: ContentBlock[];
   pluginConfigs: PluginConfig[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdateBlock: (id: string, data: any) => void;
+  onUpdateBlock: (id: string, data: PluginData) => void;
   onRemoveBlock: (id: string) => void;
 }
 
@@ -37,6 +37,7 @@ export const ComposeMainContent = ({
           <TabsList>
             <TabsTrigger value="edit">Edit Mode</TabsTrigger>
             <TabsTrigger value="preview">Preview Mode</TabsTrigger>
+            <TabsTrigger value="live">Live Mode</TabsTrigger>
           </TabsList>
 
           <TabsContent value="edit" className="space-y-6 mt-6">
@@ -50,19 +51,19 @@ export const ComposeMainContent = ({
             ) : (
               contentBlocks.map((block) => {
                 const config = pluginConfigs.find(
-                  (c) => c.id === block.pluginId
+                  (c) => c.id === block.pluginId,
                 );
                 if (!config) return null;
 
                 return (
-                  <div key={block.id}>
-                    {config.plugin.renderEditor({
-                      data: block.data,
-                      onChange: (data) => onUpdateBlock(block.id, data),
-                      editable: true,
-                      onRemove: () => onRemoveBlock(block.id),
-                    })}
-                  </div>
+                  <ContentBlockCard
+                    key={block.id}
+                    block={block}
+                    pluginConfig={config}
+                    mode="edit"
+                    onUpdate={onUpdateBlock}
+                    onRemove={onRemoveBlock}
+                  />
                 );
               })
             )}
@@ -78,7 +79,7 @@ export const ComposeMainContent = ({
             ) : (
               contentBlocks.map((block, index) => {
                 const config = pluginConfigs.find(
-                  (c) => c.id === block.pluginId
+                  (c) => c.id === block.pluginId,
                 );
                 if (!config) return null;
 
@@ -113,6 +114,39 @@ export const ComposeMainContent = ({
                   </Card>
                 );
               })
+            )}
+          </TabsContent>
+
+          <TabsContent value="live" className="space-y-8 mt-6">
+            {contentBlocks.length === 0 ? (
+              <div className="text-center p-12 border-2 border-dashed rounded-lg">
+                <p className="text-muted-foreground text-lg">
+                  Document is empty. Add modules in Edit Mode to see them here.
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl shadow-sm border p-8 min-h-[500px]">
+                <div className="max-w-3xl mx-auto space-y-12">
+                  {contentBlocks.map((block) => {
+                    const config = pluginConfigs.find(
+                      (c) => c.id === block.pluginId,
+                    );
+                    if (!config) return null;
+
+                    return (
+                      <div
+                        key={block.id}
+                        className="animate-in fade-in duration-500"
+                      >
+                        {config.plugin.renderPreview({
+                          data: block.data,
+                          blockId: block.id,
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             )}
           </TabsContent>
         </Tabs>
