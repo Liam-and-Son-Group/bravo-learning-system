@@ -3,9 +3,12 @@ import {
   getCategories,
   getLessons,
   getFolderTree,
+  createFolder,
   createLesson,
   getLessonById,
-  createFolder,
+  getLessonVersionGraph,
+  deleteWorkingDesk,
+  mergeBranch,
 } from "../apis";
 import type { CreateLessonFormData } from "../types/lesson-creation";
 
@@ -68,5 +71,50 @@ export const useGetLessonById = (lessonId: string) => {
     queryKey: [LESSON_QUERY_KEY_NAME, lessonId],
     queryFn: () => getLessonById(lessonId),
     enabled: !!lessonId,
+  });
+};
+
+export const useGetLessonVersionGraph = (lessonId: string) => {
+  return useQuery({
+    queryKey: ["version-graph", lessonId],
+    queryFn: () => getLessonVersionGraph(lessonId),
+    enabled: !!lessonId,
+  });
+};
+
+export const useDeleteWorkingDeskMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteWorkingDesk,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["version-graph"] });
+      queryClient.invalidateQueries({ queryKey: [LESSON_QUERY_KEY_NAME] });
+    },
+  });
+};
+
+export const useMergeBranchMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      lessonId,
+      sourceBranchId,
+      targetBranchId,
+    }: {
+      lessonId: string;
+      sourceBranchId: string;
+      targetBranchId?: string;
+    }) => mergeBranch(lessonId, sourceBranchId, targetBranchId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["version-graph", variables.lessonId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["branches", variables.lessonId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [LESSON_QUERY_KEY_NAME, variables.lessonId],
+      });
+    },
   });
 };

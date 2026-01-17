@@ -27,9 +27,9 @@ interface ComposeHeaderProps {
   lessonId: string;
   contentBlocksCount: number;
   isSaving: boolean;
-  activeTab: "edit" | "preview";
+  activeTab: "edit" | "preview" | "live";
   onSave: () => void;
-  onSetActiveTab: (tab: "edit" | "preview") => void;
+  onSetActiveTab: (tab: "edit" | "preview" | "live") => void;
   // Branch props
   currentBranch: Branch | null;
   branches: Branch[];
@@ -42,6 +42,7 @@ export const ComposeHeader = ({
   lessonId,
   contentBlocksCount,
   isSaving,
+  activeTab,
   onSave,
   onSetActiveTab,
   currentBranch,
@@ -77,6 +78,15 @@ export const ComposeHeader = ({
           >
             <Eye className="h-4 w-4 mr-2" />
             Preview
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onSetActiveTab("live")}
+            className={activeTab === "live" ? "bg-muted" : ""}
+          >
+            <Eye className="h-4 w-4 mr-2" />
+            Live
           </Button>
           <Button size="sm" onClick={onSave} disabled={isSaving}>
             <Save className="h-4 w-4 mr-2" />
