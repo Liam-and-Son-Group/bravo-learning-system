@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Card } from "@/shared/components/ui/card";
+import { Button } from "@/shared/components/ui/button";
 import type { LucideIcon } from "lucide-react";
 
 interface IconHeaderCardProps {
@@ -9,6 +10,7 @@ interface IconHeaderCardProps {
   bgClass: string;
   iconClass: string;
   actions?: ReactNode;
+  onRemove?: () => void;
   children: ReactNode;
 }
 
@@ -19,6 +21,7 @@ export const IconHeaderCard = ({
   bgClass,
   iconClass,
   actions,
+  onRemove,
   children,
 }: IconHeaderCardProps) => {
   return (
@@ -34,7 +37,14 @@ export const IconHeaderCard = ({
               <p className="text-sm text-muted-foreground">{description}</p>
             </div>
           </div>
-          {actions && <div className="shrink-0">{actions}</div>}
+          <div className="flex items-center gap-2 shrink-0">
+            {actions}
+            {onRemove && (
+              <Button variant="destructive" size="sm" onClick={onRemove}>
+                Remove
+              </Button>
+            )}
+          </div>
         </div>
         {children}
       </div>

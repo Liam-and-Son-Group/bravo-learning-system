@@ -60,7 +60,9 @@ export default function ClassroomsPage() {
       to: "/classrooms",
       search: (prev): ClassroomSearchState => {
         const current: ClassroomSearchState = {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           scope: (prev as any)?.scope ?? "mine",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           q: (prev as any)?.q ?? "",
         };
         return {
@@ -160,7 +162,13 @@ export default function ClassroomsPage() {
                   data={classrooms}
                   onDisable={(id) => toggleStatus({ id, next: "disabled" })}
                   onEnable={(id) => toggleStatus({ id, next: "active" })}
-                  onLeave={(id) => leave(id)}
+                  onLeave={(id) =>
+                    leave({
+                      classroomId: id,
+                      userId: currentUser?.personalInfo?.id || "",
+                      organizationId: organizationId || "",
+                    })
+                  }
                 />
               )}
             </div>

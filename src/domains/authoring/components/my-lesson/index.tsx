@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/shared/components/ui/button";
 import { DataTable } from "@/shared/components/ui/table";
 import { Badge } from "@/shared/components/ui/badge";

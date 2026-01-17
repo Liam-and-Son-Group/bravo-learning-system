@@ -111,6 +111,7 @@ TableCaption.displayName = "TableCaption";
 type Column<T> = {
   key: keyof T;
   header: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (value: any, row: T) => React.ReactNode;
 };
 

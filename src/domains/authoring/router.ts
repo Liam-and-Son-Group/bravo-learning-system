@@ -1,7 +1,7 @@
 import { authenticatedRoute } from "@/shared/lib/routers";
 import { createRoute } from "@tanstack/react-router";
 import DirectoryBrowserTemplate from "./template";
-import AuthoringPage from "./pages";
+import AuthoringPage from "./pages/index";
 import ComposePage from "./pages/compose";
 
 export const authoringRouter = createRoute({

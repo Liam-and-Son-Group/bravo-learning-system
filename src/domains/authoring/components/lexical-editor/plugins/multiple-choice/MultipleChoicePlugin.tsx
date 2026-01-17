@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Multiple Choice Plugin
  * Creates single or multi-select question exercises
@@ -7,12 +8,14 @@ import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Card } from "@/shared/components/ui/card";
 import { IconHeaderCard } from "@/shared/components/ui/icon-header-card";
 import { Badge } from "@/shared/components/ui/badge";
-import { Textarea } from "@/shared/components/ui/textarea";
+import {
+  MiniRichEditor,
+  RichTextRenderer,
+} from "../../components/mini-rich-editor";
 import { CheckCircle2, Circle, Plus, Trash2, ListChecks } from "lucide-react";
-import type { ContentPlugin } from "../../types";
+import type { ContentPlugin } from "../../types/index";
 
 /**
  * Multiple Choice Data Types
@@ -46,18 +49,20 @@ export const MultipleChoicePlugin: ContentPlugin = {
     console.log("Multiple Choice plugin initialized with editor:", editor);
   },
 
-  renderEditor: ({ data, onChange, editable }) => {
+  renderEditor: ({ data, onChange, editable, actions, onRemove }) => {
     return (
       <MultipleChoiceEditor
         data={data}
         onChange={onChange}
         editable={editable}
+        actions={actions}
+        onRemove={onRemove}
       />
     );
   },
 
-  renderPreview: (data: MultipleChoiceData) => {
-    return <MultipleChoicePreview data={data} />;
+  renderPreview: (options: { data: MultipleChoiceData; blockId?: string }) => {
+    return <MultipleChoicePreview data={options.data} />;
   },
 
   serialize: (data: MultipleChoiceData) => {
@@ -76,10 +81,14 @@ function MultipleChoiceEditor({
   data,
   onChange,
   editable,
+  actions,
+  onRemove,
 }: {
   data: MultipleChoiceData;
   onChange: (data: MultipleChoiceData) => void;
   editable: boolean;
+  actions?: React.ReactNode;
+  onRemove?: () => void;
 }) {
   const [options, setOptions] = useState<MultipleChoiceOption[]>(
     data.options || [
@@ -147,16 +156,17 @@ function MultipleChoiceEditor({
       }
       bgClass="bg-purple-100"
       iconClass="text-purple-600"
+      actions={actions}
+      onRemove={onRemove}
     >
       {/* Question */}
       <div className="space-y-2">
         <Label>Question *</Label>
-        <Textarea
+        <MiniRichEditor
           placeholder="Enter your question here..."
           value={data.question || ""}
-          onChange={(e) => onChange({ ...data, question: e.target.value })}
+          onChange={(value) => onChange({ ...data, question: value })}
           disabled={!editable}
-          className="min-h-[80px]"
         />
       </div>
 
@@ -194,10 +204,10 @@ function MultipleChoiceEditor({
             <span className="text-sm font-medium w-8">
               {String.fromCharCode(65 + index)}.
             </span>
-            <Input
+            <MiniRichEditor
               placeholder={`Option ${index + 1}`}
               value={option.text}
-              onChange={(e) => updateOption(option.id, "text", e.target.value)}
+              onChange={(value) => updateOption(option.id, "text", value)}
               disabled={!editable}
               className="flex-1"
             />
@@ -229,12 +239,11 @@ function MultipleChoiceEditor({
       {/* Explanation */}
       <div className="space-y-2">
         <Label>Explanation (optional)</Label>
-        <Textarea
+        <MiniRichEditor
           placeholder="Explain why the answer is correct..."
           value={data.explanation || ""}
-          onChange={(e) => onChange({ ...data, explanation: e.target.value })}
+          onChange={(value) => onChange({ ...data, explanation: value })}
           disabled={!editable}
-          className="min-h-[60px]"
         />
       </div>
 
@@ -312,61 +321,62 @@ function MultipleChoicePreview({ data }: { data: MultipleChoiceData }) {
   };
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        {/* Question */}
-        <div>
-          <h4 className="font-semibold text-lg mb-2">{data.question}</h4>
-          {data.allowMultiple && (
-            <Badge variant="secondary" className="text-xs">
-              Select all that apply
-            </Badge>
-          )}
-        </div>
-
-        {/* Options */}
-        <div className="space-y-2">
-          {data.options.map((option, index) => {
-            const isSelected = selected.has(option.id);
-            return (
-              <button
-                key={option.id}
-                onClick={() => handleSelect(option.id)}
-                className={`w-full text-left p-4 border-2 rounded-lg transition-colors ${
-                  isSelected
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300 bg-white"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      isSelected
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {isSelected && (
-                      <div className="w-2 h-2 rounded-full bg-white" />
-                    )}
-                  </div>
-                  <span className="font-medium">
-                    {String.fromCharCode(65 + index)}.
-                  </span>
-                  <span>{option.text || "(empty)"}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Points */}
-        {data.points && (
-          <div className="text-sm text-muted-foreground">
-            Worth {data.points} {data.points === 1 ? "point" : "points"}
-          </div>
+    <div className="space-y-4">
+      {/* Question */}
+      <div>
+        <RichTextRenderer
+          content={data.question}
+          className="font-semibold text-lg mb-2"
+        />
+        {data.allowMultiple && (
+          <Badge variant="secondary" className="text-xs">
+            Select all that apply
+          </Badge>
         )}
       </div>
-    </Card>
+
+      {/* Options */}
+      <div className="space-y-2">
+        {data.options.map((option, index) => {
+          const isSelected = selected.has(option.id);
+          return (
+            <button
+              key={option.id}
+              onClick={() => handleSelect(option.id)}
+              className={`w-full text-left p-4 border-2 rounded-lg transition-colors ${
+                isSelected
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300 bg-white"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {isSelected && (
+                    <div className="w-2 h-2 rounded-full bg-white" />
+                  )}
+                </div>
+                <span className="font-medium">
+                  {String.fromCharCode(65 + index)}.
+                </span>
+                <RichTextRenderer content={option.text} className="flex-1" />
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Points */}
+      {data.points && (
+        <div className="text-sm text-muted-foreground">
+          Worth {data.points} {data.points === 1 ? "point" : "points"}
+        </div>
+      )}
+    </div>
   );
 }

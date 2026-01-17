@@ -1,0 +1,70 @@
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/auth/components/signup/done-step/index.tsx
+  15:5  error  'ref' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/auth/components/signup/form.tsx
+   80:18  error  'e' is defined but never used      @typescript-eslint/no-unused-vars
+  127:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/compose/BranchGraphModal.tsx
+   11:10  error  'ScrollArea' is defined but never used                @typescript-eslint/no-unused-vars
+  126:9   error  'timeoutId' is never reassigned. Use 'const' instead  prefer-const
+  754:21  error  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/compose/ComposeHeader.tsx
+  45:3  error  'activeTab' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/compose/ComposeMainContent.tsx
+  17:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/compose/ContentBlockCard.tsx
+  11:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/core/LexicalEditorCore.tsx
+   28:26  error  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   48:3   error  'initialContent' is defined but never used  @typescript-eslint/no-unused-vars
+  108:27  error  'plugin' is defined but never used          @typescript-eslint/no-unused-vars
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/plugins/drag-drop/DragDropPlugin.tsx
+   91:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+  329:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/plugins/fill-in-blank/FillInBlankPlugin.tsx
+   60:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+   64:3   error  'actions' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+   65:3   error  'onRemove' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+  234:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/plugins/matching/MatchingPlugin.tsx
+   67:10  error    Fast refresh only works when a file only exports components. Move your component(s) to a separate file    react-refresh/only-export-components
+  105:6   warning  React Hook useEffect has a missing dependency: 'items'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  503:10  error    Fast refresh only works when a file only exports components. Move your component(s) to a separate file    react-refresh/only-export-components
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/plugins/multiple-choice/MultipleChoicePlugin.tsx
+   79:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+  304:10  error  Fast refresh only works when a file only exports components. Move your component(s) to a separate file  react-refresh/only-export-components
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/components/lexical-editor/types/content.ts
+  21:7  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/constants/compose.tsx
+  18:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/authoring/template/index.tsx
+  2:8  error  'DirectoryBrowserLayout' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/classroom/pages/index.tsx
+  63:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/domains/folder/hooks/use-initialize-folders.ts
+  35:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/nguyenhoanglam/Workspace/bravo-education/bravo-learning-system/src/shared/lib/axios/index.ts
+  351:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 32 problems (31 errors, 1 warning)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

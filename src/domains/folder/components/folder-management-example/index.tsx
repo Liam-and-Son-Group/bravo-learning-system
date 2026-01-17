@@ -6,7 +6,7 @@ import {
   CreateFolderDialog,
   useInitializeFolders,
   useFolderTree,
-  FolderTreeNode,
+  type FolderTreeNode,
 } from "@/domains/folder";
 import {
   Card,
@@ -29,7 +29,7 @@ export function FolderManagementExample() {
   >(undefined);
 
   // Initialize default folders if user has none
-  const { isLoading: isInitializing, hasInitialized } = useInitializeFolders();
+  const { isLoading: isInitializing } = useInitializeFolders();
 
   // Fetch folder tree
   const { data: folderTree, isLoading: isLoadingTree } = useFolderTree();

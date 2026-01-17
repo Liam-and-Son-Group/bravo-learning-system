@@ -12,7 +12,8 @@ type TProps = {
 export const DoneStep = forwardRef<StepRef, TProps>(
   (
     { organizationName = "Your Organization", userEmail = "your email" },
-    ref
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _ref
   ) => {
     return (
       <Card className="flex flex-col items-center justify-center p-6 text-center space-y-6">

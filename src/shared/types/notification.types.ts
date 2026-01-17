@@ -5,7 +5,7 @@ import type { TPrioritySystem } from "./priority-system.types";
 /**
  * Notification types in the LMS system.
  */
-const NOTIFICATION_TYPES = {
+export const NOTIFICATION_TYPES = {
   /** Notifications related to system events: maintenance, updates, errors, etc. */
   SYSTEM: "SYSTEM",
 

@@ -32,7 +32,6 @@ export function SharedClassroomCard({ classroom }: Props) {
     >
       <div className="h-12 w-12 rounded-md bg-muted flex items-center justify-center overflow-hidden text-xs font-medium">
         {classroom.organizationLogo ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={classroom.organizationLogo}
             alt={classroom.organizationName}

@@ -27,10 +27,6 @@ const ACCESS_EXP_KEY = "access_token_expires_at"; // optional timestamp (ms) if 
  */
 export function getAccessToken() {
   const token = localStorage.getItem(ACCESS_TOKEN_KEY);
-  console.log(
-    "🔑 [getAccessToken] Retrieved from localStorage:",
-    token ? `✅ "${token.substring(0, 20)}..."` : "❌ NULL"
-  );
   return token;
 }
 
@@ -110,7 +106,7 @@ export function logout(reason?: string) {
         detail: { reason: reason || "unknown" },
       })
     );
-  } catch (e) {
+  } catch {
     // noop - best effort
   } finally {
     // Ensure navigation away from protected routes
@@ -352,6 +348,7 @@ export async function uploadFiles(
     onOverallProgress?: (percent: number) => void;
   }
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const results: any[] = [];
   const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
   let uploadedBytes = 0;

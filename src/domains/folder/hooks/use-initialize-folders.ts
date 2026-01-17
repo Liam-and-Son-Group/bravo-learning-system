@@ -32,6 +32,7 @@ export function useInitializeFolders() {
             description:
               "Your workspace has been initialized with default folders",
           });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           console.error("Failed to initialize folders:", error);
           toast.error("Failed to create default folders", {

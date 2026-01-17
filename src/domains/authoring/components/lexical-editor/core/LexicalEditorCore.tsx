@@ -25,6 +25,7 @@ interface LexicalEditorCoreProps {
   /** Custom placeholder */
   placeholder?: string;
   /** Custom theme */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   theme?: Record<string, any>;
 }
 
@@ -45,7 +46,6 @@ const defaultTheme = {
  */
 export function LexicalEditorCore({
   plugins = [],
-  initialContent,
   onChange,
   editable = true,
   placeholder = "Start typing...",
@@ -105,7 +105,8 @@ export function LexicalEditorCore({
 /**
  * Plugin renderer - handles plugin initialization
  */
-function PluginRenderer({ plugin }: { plugin: EditorPlugin }) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function PluginRenderer({ plugin: _plugin }: { plugin: EditorPlugin }) {
   // Plugin initialization happens here
   // Each plugin can add custom Lexical nodes/commands/etc
   return null;

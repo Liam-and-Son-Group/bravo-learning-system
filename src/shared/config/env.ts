@@ -58,8 +58,11 @@ export const ORGANIZATION_CONFIG = {
 } as const;
 
 export const UPLOAD_CONFIG = {
-  maxSize: toNumber(import.meta.env.VITE_UPLOAD_MAX_SIZE, 10 * 1024 * 1024), // default 10MB
-  allowedTypes: splitList(import.meta.env.VITE_UPLOAD_ALLOWED_TYPES),
+  maxSize: toNumber(import.meta.env.VITE_UPLOAD_MAX_SIZE, 20 * 1024 * 1024), // default 20MB
+  allowedTypes:
+    splitList(import.meta.env.VITE_UPLOAD_ALLOWED_TYPES).length > 0
+      ? splitList(import.meta.env.VITE_UPLOAD_ALLOWED_TYPES)
+      : ["image/*", "video/*", "audio/*", "application/pdf"],
   baseUrl: import.meta.env.VITE_UPLOAD_BASE_URL,
 } as const;
 

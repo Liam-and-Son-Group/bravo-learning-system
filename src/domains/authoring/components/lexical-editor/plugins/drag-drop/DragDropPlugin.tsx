@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Drag & Drop Plugin
  * Creates exercises where students drag items into correct categories
@@ -7,11 +8,21 @@ import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Card } from "@/shared/components/ui/card";
+import {
+  MiniRichEditor,
+  RichTextRenderer,
+} from "../../components/mini-rich-editor";
 import { IconHeaderCard } from "@/shared/components/ui/icon-header-card";
 import { Badge } from "@/shared/components/ui/badge";
-import { Move, Plus, Trash2, GripVertical } from "lucide-react";
-import type { ContentPlugin } from "../../types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select";
+import { Move, Plus, Trash2, GripVertical, X } from "lucide-react";
+import type { ContentPlugin } from "../../types/index";
 
 /**
  * Drag & Drop Data Types
@@ -50,14 +61,20 @@ export const DragDropPlugin: ContentPlugin = {
     console.log("Drag & Drop plugin initialized with editor:", editor);
   },
 
-  renderEditor: ({ data, onChange, editable }) => {
+  renderEditor: ({ data, onChange, editable, actions, onRemove }) => {
     return (
-      <DragDropEditor data={data} onChange={onChange} editable={editable} />
+      <DragDropEditor
+        data={data}
+        onChange={onChange}
+        editable={editable}
+        actions={actions}
+        onRemove={onRemove}
+      />
     );
   },
 
-  renderPreview: (data: DragDropData) => {
-    return <DragDropPreview data={data} />;
+  renderPreview: (options: { data: DragDropData; blockId?: string }) => {
+    return <DragDropPreview data={options.data} />;
   },
 
   serialize: (data: DragDropData) => {
@@ -76,10 +93,14 @@ function DragDropEditor({
   data,
   onChange,
   editable,
+  actions,
+  onRemove,
 }: {
   data: DragDropData;
   onChange: (data: DragDropData) => void;
   editable: boolean;
+  actions?: React.ReactNode;
+  onRemove?: () => void;
 }) {
   const [categories, setCategories] = useState<DragDropCategory[]>(
     data.categories || [
@@ -151,30 +172,30 @@ function DragDropEditor({
   return (
     <IconHeaderCard
       Icon={Move}
-      title="Drag & Drop Exercise"
-      description="Students will drag items into correct categories"
+      title="Drag & Drop"
+      description="Students drag items into correct categories"
       bgClass="bg-orange-100"
       iconClass="text-orange-600"
+      actions={actions}
+      onRemove={onRemove}
     >
       {/* Title & Instructions */}
       <div className="space-y-2">
         <div>
           <Label>Title (optional)</Label>
-          <Input
+          <MiniRichEditor
             placeholder="e.g., Categorize the animals"
             value={data.title || ""}
-            onChange={(e) => onChange({ ...data, title: e.target.value })}
+            onChange={(value) => onChange({ ...data, title: value })}
             disabled={!editable}
           />
         </div>
         <div>
           <Label>Instructions (optional)</Label>
-          <Input
+          <MiniRichEditor
             placeholder="e.g., Drag each animal to its correct habitat"
             value={data.instructions || ""}
-            onChange={(e) =>
-              onChange({ ...data, instructions: e.target.value })
-            }
+            onChange={(value) => onChange({ ...data, instructions: value })}
             disabled={!editable}
           />
         </div>
@@ -234,27 +255,31 @@ function DragDropEditor({
         {items.map((item) => (
           <div key={item.id} className="flex items-center gap-3">
             <GripVertical className="h-5 w-5 text-muted-foreground" />
-            <Input
+            <MiniRichEditor
               placeholder="Item text"
               value={item.text}
-              onChange={(e) => updateItem(item.id, "text", e.target.value)}
+              onChange={(value) => updateItem(item.id, "text", value)}
               disabled={!editable}
               className="flex-1"
             />
-            <select
+            <Select
               value={item.categoryId}
-              onChange={(e) =>
-                updateItem(item.id, "categoryId", e.target.value)
+              onValueChange={(value) =>
+                updateItem(item.id, "categoryId", value)
               }
               disabled={!editable}
-              className="px-3 py-2 border rounded-md"
             >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-auto min-w-[120px] max-w-[250px]">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Button
               variant="ghost"
               size="icon"
@@ -331,78 +356,99 @@ function DragDropPreview({ data }: { data: DragDropData }) {
     e.preventDefault();
   };
 
+  const handleRemoveFromCategory = (itemId: string, categoryId: string) => {
+    setDroppedItems((prev) => {
+      const updated = { ...prev };
+      updated[categoryId] = updated[categoryId].filter((id) => id !== itemId);
+      return updated;
+    });
+  };
+
   const availableItems = data.items.filter(
     (item) => !Object.values(droppedItems).flat().includes(item.id)
   );
 
   return (
-    <Card className="p-6">
-      <div className="space-y-4">
-        {data.title && <h4 className="font-semibold">{data.title}</h4>}
-        {data.instructions && (
-          <p className="text-sm text-muted-foreground">{data.instructions}</p>
-        )}
+    <div className="space-y-4">
+      {data.title && (
+        <RichTextRenderer content={data.title} className="font-semibold" />
+      )}
+      {data.instructions && (
+        <RichTextRenderer
+          content={data.instructions}
+          className="text-sm text-muted-foreground"
+        />
+      )}
 
-        {/* Available Items */}
-        <div className="p-4 border-2 border-dashed rounded-lg bg-gray-50">
-          <Label className="text-sm mb-2 block">Drag from here:</Label>
-          <div className="flex flex-wrap gap-2">
-            {availableItems.map((item) => (
-              <div
-                key={item.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, item.id)}
-                className="px-4 py-2 bg-white border rounded-lg cursor-move hover:shadow-md transition-shadow"
-              >
-                {item.text || "(empty)"}
-              </div>
-            ))}
-            {availableItems.length === 0 && (
-              <span className="text-sm text-muted-foreground">
-                All items placed
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Categories */}
-        <div className="grid grid-cols-2 gap-4">
-          {data.categories.map((category) => {
-            const categoryItems = droppedItems[category.id] || [];
-            return (
-              <div
-                key={category.id}
-                onDrop={(e) => handleDrop(e, category.id)}
-                onDragOver={handleDragOver}
-                className="p-4 border-2 rounded-lg min-h-[120px]"
-                style={{ borderColor: category.color || "#3b82f6" }}
-              >
-                <Badge
-                  className="mb-3"
-                  style={{
-                    backgroundColor: category.color || "#3b82f6",
-                  }}
-                >
-                  {category.name}
-                </Badge>
-                <div className="space-y-2">
-                  {categoryItems.map((itemId) => {
-                    const item = data.items.find((i) => i.id === itemId);
-                    return (
-                      <div
-                        key={itemId}
-                        className="px-3 py-2 bg-white border rounded"
-                      >
-                        {item?.text}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+      {/* Available Items */}
+      <div className="p-4 border-2 border-dashed rounded-lg bg-gray-50">
+        <Label className="text-sm mb-2 block">Drag from here:</Label>
+        <div className="flex flex-wrap gap-2">
+          {availableItems.map((item) => (
+            <div
+              key={item.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, item.id)}
+              className="px-4 py-2 bg-white border rounded-lg cursor-move hover:shadow-md transition-shadow"
+            >
+              <RichTextRenderer content={item.text} />
+            </div>
+          ))}
+          {availableItems.length === 0 && (
+            <span className="text-sm text-muted-foreground">
+              All items placed
+            </span>
+          )}
         </div>
       </div>
-    </Card>
+
+      {/* Categories */}
+      <div className="grid grid-cols-2 gap-4">
+        {data.categories.map((category) => {
+          const categoryItems = droppedItems[category.id] || [];
+          return (
+            <div
+              key={category.id}
+              onDrop={(e) => handleDrop(e, category.id)}
+              onDragOver={handleDragOver}
+              className="p-4 border-2 rounded-lg min-h-[120px]"
+              style={{ borderColor: category.color || "#3b82f6" }}
+            >
+              <Badge
+                className="mb-3"
+                style={{
+                  backgroundColor: category.color || "#3b82f6",
+                }}
+              >
+                {category.name}
+              </Badge>
+              <div className="space-y-2">
+                {categoryItems.map((itemId) => {
+                  const item = data.items.find((i) => i.id === itemId);
+                  return (
+                    <div
+                      key={itemId}
+                      className="px-3 py-2 bg-white border rounded flex items-center justify-between gap-2 group"
+                    >
+                      <span>{item?.text}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() =>
+                          handleRemoveFromCategory(itemId, category.id)
+                        }
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

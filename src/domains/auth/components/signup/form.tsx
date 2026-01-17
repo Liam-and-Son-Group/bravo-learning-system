@@ -77,7 +77,7 @@ export default function SignUpForm() {
           setIsUploading(true);
           const res = await uploadSignupAvatar(avatarFile);
           avatarUrl = res.body.url;
-        } catch (e) {
+        } catch {
           toast("Avatar upload failed", {
             description: (
               <p className="text-xs">
@@ -124,7 +124,7 @@ export default function SignUpForm() {
       };
 
       submitFullSignup(payload);
-    } catch (error) {
+    } catch {
       toast("Unexpected error", {
         description: (
           <p className="text-xs">Something went wrong. Please try again.</p>

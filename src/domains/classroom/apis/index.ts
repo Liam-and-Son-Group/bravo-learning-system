@@ -57,6 +57,7 @@ export async function fetchClassrooms(
   // TODO: Implement scope filtering (mine, organizations, shared)
   // For now, fetch all classrooms for the organization
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const params: Record<string, any> = {
     page: 1,
     pageSize: 100, // Fetch all for now
@@ -102,10 +103,12 @@ export async function fetchClassroomStudents(
   classroomId: string,
   organizationId: string
 ): Promise<ClassroomStudent[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const response = await authInstance.get<any[]>(
     `/organizations/${organizationId}/learning-spaces/${classroomId}/enrolments`
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return response.data.map((enrolment: any) => ({
     id: enrolment.userId,
     name: enrolment.user?.name || "Unknown",
@@ -130,6 +133,7 @@ export async function createClassroom(
 }
 
 export async function updateClassroom(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _payload: UpdateClassroomPayload
 ): Promise<Classroom> {
   // Extract organizationId from payload or get from context

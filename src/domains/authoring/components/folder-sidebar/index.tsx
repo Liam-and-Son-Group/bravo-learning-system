@@ -46,19 +46,7 @@ export function FolderSidebar({
   // The API returns { folders: [...] } directly
   const folders = folderTreeData?.folders || [];
 
-  // Debug logging
-  console.log("FolderSidebar - folderTreeData:", folderTreeData);
-  console.log("FolderSidebar - folders:", folders);
-  console.log("FolderSidebar - folders.length:", folders.length);
-  console.log("FolderSidebar - isLoading:", isLoading);
-  console.log("FolderSidebar - isInitializing:", isInitializing);
-  console.log("FolderSidebar - isLoadingTree:", isLoadingTree);
-  console.log("FolderSidebar - Condition check:", {
-    isLoading,
-    foldersLength: folders.length,
-    willShowEmpty: !isLoading && folders.length === 0,
-    willShowTree: !isLoading && folders.length > 0,
-  });
+
 
   return (
     <div className="flex flex-col h-full">

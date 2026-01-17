@@ -54,6 +54,62 @@ export const getLessonContent = async (lessonId: string) => {
   return authInstance.get(`/lessons/${lessonId}/content`);
 };
 
+export const saveLessonVersion = async (
+  lessonId: string,
+  data: {
+    branchId: string;
+    versionName: string;
+    blocks: ContentBlock[];
+  }
+) => {
+  return authInstance.post(`/lessons/${lessonId}/versions`, data);
+};
+
+// Branch APIs
+export const getBranches = async (lessonId: string) => {
+  return authInstance.get(`/lessons/${lessonId}/branches`);
+};
+
+export const createBranch = async (
+  lessonId: string,
+  data: {
+    name: string;
+    message?: string;
+    sourceBranchId?: string;
+  }
+) => {
+  return authInstance.post(`/lessons/${lessonId}/branches`, data);
+};
+
+export const getBranchContent = async (lessonId: string, branchId: string) => {
+  return authInstance.get(`/lessons/${lessonId}/branches/${branchId}/content`);
+};
+
+export const getBranchVersionHistory = async (
+  lessonId: string,
+  branchId: string
+) => {
+  return authInstance.get(`/lessons/${lessonId}/branches/${branchId}/versions`);
+};
+
+export const getVersionDetails = async (
+  lessonId: string,
+  versionId: string
+) => {
+  return authInstance.get(`/lessons/${lessonId}/versions/${versionId}`);
+};
+
+export const mergeBranch = async (
+  lessonId: string,
+  sourceBranchId: string,
+  targetBranchId?: string
+) => {
+  return authInstance.post(
+    `/lessons/${lessonId}/branches/${sourceBranchId}/merge`,
+    { targetBranchId }
+  );
+};
+
 export const publishLesson = async (lessonId: string) => {
   return authInstance.post(`/lessons/${lessonId}/publish`);
 };

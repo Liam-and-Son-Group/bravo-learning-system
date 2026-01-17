@@ -15,7 +15,7 @@ import {
   AvatarImage,
 } from "@/shared/components/ui/avatar";
 import { useCurrentUser } from "@/shared/hooks/use-current-user";
-import { User, Mail, Briefcase, MapPin, Clock } from "lucide-react";
+import { User, Mail, Briefcase, MapPin } from "lucide-react";
 
 export default function AccountPage() {
   const { currentUser, isLoading } = useCurrentUser();

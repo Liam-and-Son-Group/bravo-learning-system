@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /**
  * Fill in Blank Plugin
  * Creates fill-in-the-blank exercises with text and answer blanks
@@ -7,11 +8,14 @@ import { useState } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
-import { Card } from "@/shared/components/ui/card";
 import { IconHeaderCard } from "@/shared/components/ui/icon-header-card";
 import { Badge } from "@/shared/components/ui/badge";
 import { FileText, Plus, Trash2 } from "lucide-react";
-import type { ContentPlugin, FillInBlankData, BlankItem } from "../../types";
+import type {
+  ContentPlugin,
+  FillInBlankData,
+  BlankItem,
+} from "../../types/index";
 
 /**
  * Fill in Blank Plugin Implementation
@@ -28,12 +32,16 @@ export const FillInBlankPlugin: ContentPlugin = {
 
   renderEditor: ({ data, onChange, editable }) => {
     return (
-      <FillInBlankEditor data={data} onChange={onChange} editable={editable} />
+      <FillInBlankEditor
+        data={data}
+        onChange={onChange}
+        editable={editable}
+      />
     );
   },
 
-  renderPreview: (data: FillInBlankData) => {
-    return <FillInBlankPreview data={data} />;
+  renderPreview: (options: { data: FillInBlankData; blockId?: string }) => {
+    return <FillInBlankPreview data={options.data} />;
   },
 
   serialize: (data: FillInBlankData) => {
@@ -56,6 +64,8 @@ function FillInBlankEditor({
   data: FillInBlankData;
   onChange: (data: FillInBlankData) => void;
   editable: boolean;
+  actions?: React.ReactNode;
+  onRemove?: () => void;
 }) {
   const [items, setItems] = useState<BlankItem[]>(
     data.items || [
@@ -220,47 +230,45 @@ function FillInBlankEditor({
  */
 function FillInBlankPreview({ data }: { data: FillInBlankData }) {
   return (
-    <Card className="p-6">
+    <div className="space-y-4">
+      {data.title && <h4 className="font-semibold">{data.title}</h4>}
+      {data.instructions && (
+        <p className="text-sm text-muted-foreground">{data.instructions}</p>
+      )}
       <div className="space-y-4">
-        {data.title && <h4 className="font-semibold">{data.title}</h4>}
-        {data.instructions && (
-          <p className="text-sm text-muted-foreground">{data.instructions}</p>
-        )}
-        <div className="space-y-4">
-          {data.items.map((item, index) => {
-            const parts = item.text.split("_____");
-            return (
-              <div key={item.id} className="space-y-2">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="font-medium">{index + 1}.</span>
-                  {parts.map((part, i) => (
-                    <span key={i}>
-                      {part}
-                      {i < parts.length - 1 && (
-                        <input
-                          type="text"
-                          className="inline-block w-32 px-2 py-1 border-b-2 border-blue-500 focus:outline-none"
-                          placeholder="___"
-                        />
-                      )}
-                    </span>
+        {data.items.map((item, index) => {
+          const parts = item.text.split("_____");
+          return (
+            <div key={item.id} className="space-y-2">
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="font-medium">{index + 1}.</span>
+                {parts.map((part, i) => (
+                  <span key={i}>
+                    {part}
+                    {i < parts.length - 1 && (
+                      <input
+                        type="text"
+                        className="inline-block w-32 px-2 py-1 border-b-2 border-blue-500 focus:outline-none"
+                        placeholder="___"
+                      />
+                    )}
+                  </span>
+                ))}
+              </div>
+              {item.alternatives && item.alternatives.length > 0 && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground ml-6">
+                  <span>Accepts:</span>
+                  {item.alternatives.map((alt, i) => (
+                    <Badge key={i} variant="secondary" className="text-xs">
+                      {alt}
+                    </Badge>
                   ))}
                 </div>
-                {item.alternatives && item.alternatives.length > 0 && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground ml-6">
-                    <span>Accepts:</span>
-                    {item.alternatives.map((alt, i) => (
-                      <Badge key={i} variant="secondary" className="text-xs">
-                        {alt}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-    </Card>
+    </div>
   );
 }
